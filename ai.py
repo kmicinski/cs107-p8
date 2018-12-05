@@ -41,7 +41,8 @@ class AISquirrel(Squirrel):
         self.board.state.decrementFuel(5)
         x = []
         for ferret in self.board.ferrets:
-            x.append((ferret.getX(),ferret.getY()))
+            if ferret.hp > 0:
+                x.append((ferret.getX(),ferret.getY()))
         return x
 
     def getExit(self):
