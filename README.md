@@ -1,205 +1,171 @@
-# CS 107 Project 7 -- Enemy AI and Parsing JSON in HaverQuest
+# CS 107 Project 8 -- AI Adventure
 
 **Due: Fri, Dec 14, 5PM**
+
+You specifically **may not** use lag days on this project, as per the
+college-level requirements about work into finals week.
 
 In this project you'll be implementing an AI for HaverQuest. The goal
 of this project is for you to have fun experimenting on your own while
 designing something cool to end the term. If you find yourself writing
 over 2-300 lines of code, you're probably working too hard.
 
+The basic goal of your project is to make an AI that can automatically
+navigate to the exit tile under a certain set of constraints:
 
-variety of features expanding
-HaverQuest to a larger-scale game. The real point of this project is
-to give you experience working with a large codebase. This project is
-a bit more open-ended than the previous, allowing a little more
-exploration on your end.
+- You are playing the squirrel
 
-For this project, grading / testing will be largely based on us
-playing your game and reading your code, since testing precise
-characteristics of the game mechanics via unit tests is a bit
-challenging here.
+- You start with 30 fuel
 
-## Part 1: Implementing Player Movement
+- Each half-second, you receive 3 more fuel
 
-This part will have you make players move. Right now, the players in
-our game won't move at all. To make them move, we will associate
-players a "speed vector." Players are implemented in the `Player`
-class within the file `players.py`. You should take some time to read
-through this class right now, as it is the superclass of all of the
-things on the board that move.
+- To move, you pay 1 fuel
 
-In HaverQuest the game board is represented by a class named
-`GameBoard`, implemented in `gameboard.py`. This class is comprised of
-a matrix of "priority queue" data structures: ordered lists of tiles,
-where the ordering occurs based on the tile's "priority," an attribute
-set as the tile is built. Priorities are used to order tiles so that,
-for example--when a player is sitting on top of a background--the
-player appears on top of the background. This class contains several
-important methods:
+- You can figure out where each of the ferrets on the board if you
+  "pay" 5 fuel (of course, they might move)
 
-- `addTile`, which adds a tile to the board. Where it is added depends
-  on the tile's position.
+- You can figure out where the exit tile is if you pay 30 fuel
 
-- `removeTile`, which removes a tile from the board. You will need to
-  call this method during your assignment.
+- You can figure out where each of the health packs are by paying 20
+  fuel
 
-- `registerForClockTick`, which registers a tile to receive clock
-  ticks, discussed next.
+- You cannot set the speed (speed is always 0)
 
-- `unregisterForClockTick`, which unregisters a tile to receive clock
-  ticks.
+- You can only move one tile at a time (but you can move diagonally)
 
-Most games work by using a "game loop:" a big loop that gets called
-many times per second to move characters, redraw parts of the screen,
-and manage other parts of the game's state. Our game is no different,
-and several times a second our game will process what are called
-"clock ticks." You can find this in `gameLoop` within `game.py`. As a
-result, each of the player's `clockTick` method will be called.
+- You can look up the positions of all of the current stones on the
+  board for free (without using any fuel)
 
-### Task 1: Implement `clockTick` in `Player`
+- You may not manually set the position of any tile or move in a
+  discontinuous way
 
-You are to implement the `clockTick` function in the `Player`
-class. Handle a clock tick event. This is the main method in the game
-that will cause player movement. Be sure to use self.move for
-movement, as some Player subclasses may override movement (e.g., to
-subtract fuel). This method takes two arguments:
-    
- - fps <-- The number of frames per second (i.e., number of
-   times this method is called per second)
-    
- - num <-- The number of frames since the last time this method
-   was called.
-    
-As a result, this function should move the player the appropriate
-amount based on the speed vector. The speed vector is given in "tiles
-per second."
-     
-For example, let's say that self.speed = (10,10). This means that this
-tile should move 10 tiles to the right every second, and also 10 tiles
-down every second. So if `clockTick(10,1)` is called, this method
-should move the player right one tile and down one tile (i.e., (x+1,
-y+1)). However, let's instead say that self.speed is (5,5). Then...
-    
-- self.clockTick(10,1) should do nothing the first time it is
-  called.
-       
-- self.clockTick(10,1) should move the tile right one tile
-  and down one tile the *second* time it is called.
-    
-This accounts for the fact that objects will move across the board
-with variable speeds.
-   
-There are several things to keep in mind here:
-    
-- To actually *perform* the movement, you should use the
-  self.move(deltaX, deltaY) method, which takes a delta x and
-  delta y (both in the range [-1,1]) and moves to (x + deltaX, y
-  + deltaY)
-    
-- Sometimes you can't move. For example, AI players should not
-  be able to walk through walls. If a player attempts to move to
-  a tile to which it cannot move, you must set the `canMove`
-  field to False (it should be set to True) otherwise.
+To implement your AI, you will extend the `clockTick` method in
+`MyAISquirrel` within the `ai.py` file. If you read what I have
+written there right now, you can see an extremely naive AI that does a
+random walk: every four times it is called, it picks a random
+direction to travel in and walks that way. Every 40 times it is
+called, it gets the position of all the ferrets. Every 80 times it is
+called, it gets the position of all health packs. Every 160 times it
+is called, it gets the location of the exit tile.
 
-Once you implement this method, things should start to move..!
+This project is meant for you to have fun with and play around with a
+bunch of different potential solutions. I recommend the following
+solution:
 
-## Part 2: Making Stones Move and Health Packs
+- Wait until you have enough fuel to find the exit, plus some left
+  over
 
-As the game sits now, when you hit the space button, the squirrel will
-throw a stone in the direction that the squirrel is pointing. For
-example, when you boot up the game, the squirrel will be poised to
-shoot to the right. But this isn't ready yet: you'll do that
-later. For now, you'll just implement the logic to make the stones
-move. For this, you'll override the `clockTick` method in the `Stone`
-class.
+- Use your pathfinder solution (if you didn't do this right there's a
+  solution in `pathfinder.py`) to figure out how to get to the exit
 
-### Task 2: Making Stones Move
+- Avoid getting hit by a stone
 
-This method will be called in the same way as `clockTick` on the
-`Player` object, as this is a subclass of `Player`. Your clock tick method
-should:
+- Try to make sure you don't hit a ferret!
 
-- Call the parent's `clockTick` method
+### Use different levels
 
-- If the movement failed (e.g., because the stone hit a wall) you
-  should remove this tile from the board (consider using one of the
-  board's methods). Don't forget to also unregister for clock ticks.
+The game is currently set up to use the single level you see before
+you. But I will ask you to demonstrate your AI with different
+levels. All of them will be solvable (I will never trick you). But
+some may have ferrets placed in different places and use different
+maps. To test this, I encourage you to experiment with the
+configuration file `config.json`, which specifies the position of the
+ferrets and the map to use. Try out some other maps and move the
+ferret around. I won't award points to solutions that just hard code
+the answers for *some particular* level.
 
-### Task 3: Implementing the Health Object
+## Functions to Use
 
-The `Health` class implements a tile for a health pack. When the
-squirrel walks over this tile, it should increment your health by 15
-and remove the tile from the board.
+- `canMove`, which accepts `x` and `y` in the range `[-1,1]` and tells
+  you whether or not you can move to that tile.
 
-Whenever another tile "bumps into" this tile, its
-`handleCollisionWith` method will be called. You should implement this
-function by:
+- `move`, which accepts `x` and `y` in the range `[-1,1]` and moves to
+  that tile using |x| + |y| fuel
 
-- Check whether the tile being collided with is a squirrel
+- `fireStone(x,y)`, which fires a stone with a set speed along the
+  vector `(x * speed, y * speed)`. You don't have any control over
+  speed, but x and y must be in the range `[-1,1]`
 
-    - You can do this by checking the tile's `type`, or you can call
-      `isSquirrel`.
+- `getStones()` will get all the stones on the board fired by the
+  ferrets. No fuel used. (Useful for avoiding them!)
 
-- If it is, it should increment the fuel by 15 and *then* 
-  remove the tile from the board.
-  
-    - Hint: the game board keeps track of fuel by a field named
-      `state`. This object has a few methods, one of them being
-      `incrementFuel`, the one you should use here.
+- `getFerrets()` will get all the ferrets on the board. Uses 5 fuel
 
-- If it is not, it should not do anything.
+- `getHealthPacks()` will get all the ferrets on the board. Uses 30
+  fuel. However, tells you health packs that may have already been
+  "used up" (so you need to remember if you want to use them).
 
-## Part 3: Fire the Stones
+- `getFuel()` will return how much fuel you have left.
 
-The main logic for implementing the main character is in
-`Squirrel`. Notably, the code that responds to key presses is in the
-function `handleEvent`. This function moves the squirrel left, right,
-up, or down, and also sets a "movement vector", which keeps track of
-the last direction in which the squirrel is moving. This is useful for
-keeping track of the fact that the squirrel should shoot up if it was
-last traveling up. When the space bar is pressed, the `fireStone`
-method is called.
+## Part 1 [30%]: Design Document
 
-### Task 4: Implement the `fireStone` method
+For the first part of the assignment, I want you to think about how
+you want to solve the project. After doing so, write between 400 and
+1500 words in the document (DESIGN) describing your approach at the
+solution, using good prose to describe your solution at a high
+level. Next, indicate which functions you will use to achieve your
+goals and in what orders. To some extent, we will check that this
+actually matches what you implement.
 
-This method should fire a stone. The stone should start at (x + mX,
-y + mY) where (mX, mY) is the movement vector. For example, if the
-squirrel is traveling to the right (because the last key pressed was
-the right) and the squirrel is currently at (3, 2), then the stone
-should start at (4, 2). Additionally, you must subtract 10 fuel after
-firing a stone.
+## Part 2 [70%]: AI Implementation
 
-Note that you will need to:
+This will all occur in the file `ai.py`, and specifically the
+`clockTick` method. I invite you to add more methods. Do not break the
+rules. If you're doing something that feels like cheating by making
+the game easier, please ask first. Don't just hack the game to make it
+give you points, that's not taking the assignment seriously and I will
+be unhappy if you circumvent the point of thinking about this by doing
+something hacky like modifying other files to increase fuel.
 
-- Check that the stone can actually start at that place. For example,
-  if the stone should start at (4, 2) but there is a wall there, then
-  you should not fire a stone.
-- Add the stone to the board (otherwise it won't show up)
-- Ensure there are at least 10 fuel tokens available
-- Ensure that you make the stone register for clock ticks (otherwise
-  it won't move)
+I will assign four categories of points (out of 70%):
 
-### Task 5: Handle Collisions with Ferrets and Stones
+- Did you even attempt the exercise at all (30%). You at least wrote
+  some of your own code, but what you did didn't seem like a good
+  faith attempt at building an AI.
 
-Just like the health object, the squirrel should handle collisions
-with other objects on the board.
+- Does your AI do *anything* remotely sensible (55%). This doesn't
+  even have to be solving the maze, it just has to be something you
+  thought up and can explain.
 
-## Scoring Breakdown
+- Can your AI actually make it to the end of the maze at least some of
+  the time (63%). You used the path finder, integrated it into your
+  solution, and did something sensible.
 
-- Part 1 (`DLList`):
-  - Public tests: X/8
-  - Secret tests: X/8
-- Part 2 (Level solving):
-  - `canMoveTo`
-    - Public tests: X/1
-    - Secret tests: X/1
-  - `checkValidPath`
-    - Public tests: X/1
-    - Secret tests: X/1
-  - `canSolve`
-    - Public tests: X/4
-    - Secret tests: X/5
-  - `findPath`
-    - Public tests: X/3
-    - Secret tests: X/3
-- Total: X/35
+- Can your AI make it to the end of the maze basically all the time,
+  along with using some intelligence to fire at the ferrets (67%).
+
+- Can your AI make it to the end, get health packs, avoid the stones,
+  and fire at the ferrets (70%).
+
+I think *everyone* should be able to get to 63% on this part without
+too much work. Just use some logic to wait until you have enough fuel
+(say 60) to solve the maze, and then solve it and quickly move there!
+
+### Extra Credit
+
+If you volunteer to demonostrate your solution in class, you will
+receive 20% extra credit to use on some previous lab (or the current
+one). You tell me which one you want to use it on. You can't "split"
+it across labs or anything like that, so please avoid getting to gamey
+about it. My only constraint here is that if you want to demo during
+class, you have to email me 48 hours ahead of next Thursday's class
+time with a video demonstrating your current AI: again, this can be as
+rudimentary as you want, it doesn't have to be getting a 70%. But you
+can't just decide day of that you want the 20%: it needs to be a
+thought out thing. (And yes, this is to encourage you to start early!)
+
+### Grading
+
+I really do want this project to be easyish. I expect everyone to be
+able to get a 93%, many student to be able to get 97%, and a few to be
+able to get 100%.
+
+Your design document will essentially be completion-based.  To get
+your grade for the second part, you will either (a) find me and
+demonstrate your solution or (b) make a video and show me.
+
+### Strategic Advice
+
+Do the simple thing first. I think you can figure a path through the
+level without too much work, that part should be easy, which will get
+you a 63% on that part off the bat.
