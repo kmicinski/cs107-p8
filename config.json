@@ -1,0 +1,91 @@
+{
+  "screenX": 20,
+  "screenY": 20,
+  "tileSize": 32,
+  "tiles": [
+    {
+      "id": "grass",
+      "filename": "imgs/grass.png",
+      "type": "texture",
+      "priority": 4,
+      "mapCharacter": "G"
+    },
+    {
+      "id": "brickred",
+      "filename": "imgs/brickred.png",
+      "type": "texture",
+      "priority": 1,
+      "mapCharacter": "R"
+    },
+    {
+      "id": "brickgrey",
+      "filename": "imgs/brickgrey.png",
+      "type": "texture",
+      "priority": 1,
+      "mapCharacter": "B"
+    },
+    {
+      "id": "uparrow",
+      "filename": "imgs/up.png",
+      "type": "texture",
+      "priority": 2,
+      "mapCharacter": "u"
+    },
+    {
+      "id": "downarrow",
+      "filename": "imgs/down.png",
+      "type": "texture",
+      "priority": 2,
+      "mapCharacter": "d"
+    },
+    {
+      "id": "leftarrow",
+      "filename": "imgs/left.png",
+      "type": "texture",
+      "priority": 2,
+      "mapCharacter": "l"
+    },
+    {
+      "id": "rightarrow",
+      "filename": "imgs/right.png",
+      "type": "texture",
+      "priority": 2,
+      "mapCharacter": "r"
+    },
+    {
+      "id": "squirrel",
+      "filename": "imgs/squirrelright.png",
+      "type": "texture",
+      "priority": 2,
+      "mapCharacter": "S"
+    }
+  ],
+  "levels": [
+    {
+      "id": "level1",
+      "file": "maps/level3.map",
+      "width": 20,
+      "height": 20,
+      "startX": 18,
+      "startY": 18,
+      "endX": 5,
+      "endY": 5,
+      "initialfuel": 20,
+        "type": "",
+        "characters": 
+        [ {"type": "squareferret",
+           "startX": 12,
+           "startY": 12
+          },
+          {"type": "healthpack",
+           "startX": 19,
+           "startY": 19
+          },
+          {"type": "squareferret",
+           "startX": 6,
+           "startY": 6
+          }
+        ]
+    }
+  ]
+}
