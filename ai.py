@@ -80,6 +80,8 @@ class AISquirrel(Squirrel):
         startingTile = (self.getX()+x,
                         self.getY()+y)
 
+        movementVector = [x,y]
+
         # Make sure we're not trying to, shoot at something we can't,
         # e.g., a wall.
         if (self.canMoveTo(startingTile[0], startingTile[1])):
@@ -98,6 +100,10 @@ class MyAISquirrel(AISquirrel):
         super().__init__(coordinate, board)
         self.myTicks = 0
         self.setSpeed((0,0))
+
+    # Get the current fuel
+    def getFuel(self):
+        return self.board.state.getFuel()
 
     # You may call this method as often as you like: it does not use
     # any fuel.
@@ -148,9 +154,15 @@ class MyAISquirrel(AISquirrel):
         if (self.myTicks % 4 != 0):
             return
 
+        print("Fuel is")
+        print(self.getFuel())
+
         print("The stones are here!")
         for stone in self.getStones():
             print(stone)
+
+        if (self.myTicks % 20 == 0):
+            self.fireStone(-1,-1)
 
         if (self.myTicks % 40 == 0):
             print('getting the position of all ferrets')

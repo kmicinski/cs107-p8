@@ -109,6 +109,8 @@ class GameBoard:
             for observer in self.board[toX][toY]:
                 if (observer[1].getPriority() >= tile.getPriority()):
                     observer[1].handleCollisionWith(tile)
+                #if tile.getPriority() >= observer[1].getPriority():
+                #    tile.handleCollisionWith(observer[1])
 
     # Register for clock tick events
     def registerForClockTick(self,observer):

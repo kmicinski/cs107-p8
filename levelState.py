@@ -7,6 +7,10 @@ class LevelState:
         self.won  = False
         self.over = False
 
+    # Get the fuel level
+    def getFuel(self):
+        return self.hp
+
     # Decrease the amount of fuel by i
     def decrementFuel(self,i):
         self.hp = self.hp - i
