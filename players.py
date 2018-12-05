@@ -319,6 +319,8 @@ class Stone(Player):
             # Tried to move and couldn't
             self.board.removeTile(self)
             self.board.unregisterForClockTick(self)
+            if self in self.board.stones:
+                self.board.stones.remove(self)
 
     def __str__(self): return "stone"
 
@@ -548,6 +550,7 @@ class SquareAIFerret(Player):
                             movementVector[1] * 4))
             self.board.addTile(stone)
             self.board.registerForClockTick(stone)
+            self.board.stones.append(stone)
 
     # If we collide with a stone, we subtract 15 HP.
     def handleCollisionWith(self, other):

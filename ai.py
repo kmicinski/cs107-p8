@@ -37,6 +37,12 @@ class AISquirrel(Squirrel):
             x.append((hpack.getX(),hpack.getY()))
         return x
 
+    def getStones(self):
+        x = []
+        for stone in self.board.stones:
+            x.append((stone.getX(), stone.getY()))
+        return x
+
     def getFerrets(self):
         self.board.state.decrementFuel(5)
         x = []
@@ -109,12 +115,11 @@ class MyAISquirrel(AISquirrel):
     def fireStone(self,x,y):
         super().fireStone(x,y)
 
-    # Gets the *current* position of all ferrets on the board as a
-    # list of (x,y) tuples.
+    # Gets the position of all stones on the board
     # 
-    # Uses 5 fuel each time it is called
-    def getFerrets(self):
-        return super().getFerrets()
+    # Uses 0 fuel each time it is called
+    def getStones(self):
+        return super().getStones()
 
     # Gets the position of all health packs on the board (which do not
     # move)
@@ -142,6 +147,10 @@ class MyAISquirrel(AISquirrel):
 
         if (self.myTicks % 4 != 0):
             return
+
+        print("The stones are here!")
+        for stone in self.getStones():
+            print(stone)
 
         if (self.myTicks % 40 == 0):
             print('getting the position of all ferrets')

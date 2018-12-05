@@ -56,6 +56,7 @@ class GameBoard:
         self.clockTickListeners = []
         self.ferrets = []
         self.healthpacks = []
+        self.stones = []
 
     def getWidth(self): return self.width
     def getHeight(self): return self.height
