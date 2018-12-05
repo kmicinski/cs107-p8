@@ -1,5 +1,3 @@
-from dllist import *
-
 # A path finder object isolates the logic to perform a path-finding
 # problem on:
 # 
