@@ -119,8 +119,14 @@ class MyAISquirrel(AISquirrel):
     # move)
     # 
     # Uses 20 fuel each time it is called
-    def getFerrets(self):
-        return super().getFerrets()
+    def getHealthPacks(self):
+        return super().getHealthPacks()
+
+    # Gets the position of the exit tile
+    # 
+    # Uses 30 fuel each time it is called
+    def getHealthPacks(self):
+        return super().getExit()
 
     # Implement the main logic for your AI here. You may not
     # manipulate the other tiles on the board directly: this will be
