@@ -331,7 +331,7 @@ class Health(Player):
         self.nuts = 0
         self.pic = pygame.image.load(os.path.join("imgs/hospital.png"))
         self.priority = Priority.item
-        self.setSpeed((2,0))
+        self.setSpeed((0,0))
         self.tileType = "healthpack"
 
     def getImage(self):
