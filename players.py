@@ -333,8 +333,6 @@ class Health(Player):
         self.priority = Priority.item
         self.setSpeed((0,0))
         self.tileType = "healthpack"
-        print("hpack")
-        print(self.getX(),self.getY())
         
     def getImage(self):
         return self.pic
