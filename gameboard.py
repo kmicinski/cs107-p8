@@ -138,7 +138,7 @@ class GameBoard:
             elif enemy["type"] == "healthpack":
                 hp = Health([enemy["startX"], enemy["startY"]],self)
                 self.addTile(hp)
-                self.healthpacks.append(ferret)
+                self.healthpacks.append(hp)
 
     # Render the whole screen
     def renderScreen(self,screen):
